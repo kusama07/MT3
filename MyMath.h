@@ -35,6 +35,11 @@ struct Plane
 	float distance;
 };
 
+struct Triangle
+{
+	Vector3 vertices[3];
+};
+
 Vector3 Add(const Vector3& v1, const Vector3& v2);
 
 Vector3 Subtract(const Vector3& v1, const Vector3& v2);
@@ -97,6 +102,8 @@ bool IsCollision(const Ray& line, const Plane& plane);
 
 bool IsCollision(const Line& line, const Plane& plane);
 
+bool IsCollision(const Triangle& triangle, const Segment& segment);
+
 Vector3 Perpendicular(const Vector3& vector);
 
 void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
@@ -106,3 +113,5 @@ void DrawLine(const Segment& seg, const Matrix4x4& viewProjectionMatrix, const M
 void DrawLine(const Ray& ray, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
 void DrawLine(const Line& line, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);

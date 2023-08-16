@@ -772,6 +772,42 @@ bool IsCollision(const Line& line, const Plane& plane)
 	return true;
 }
 
+bool IsCollision(const Triangle& triangle, const Segment& segment)
+{
+	Plane plane{};
+	plane.normal = Normalize(Cross(Subtract(triangle.vertices[1], triangle.vertices[0]), Subtract(triangle.vertices[2], triangle.vertices[1])));
+
+	plane.distance = Dot(triangle.vertices[0], plane.normal);
+
+	float dot = Dot(plane.normal, segment.diff);
+
+	if (dot == 0.0f)
+	{
+		return false;
+	}
+
+	float t = (plane.distance - Dot(segment.origin, plane.normal)) / dot;
+
+	if (0.0f < t && t < 1.0f)
+	{
+		Vector3 p = Add(segment.origin, Multiply(t, segment.diff));
+
+		Vector3 cross01 = Cross(Subtract(triangle.vertices[1], triangle.vertices[0]), Subtract(p, triangle.vertices[1]));
+
+		Vector3 cross12 = Cross(Subtract(triangle.vertices[2], triangle.vertices[1]), Subtract(p, triangle.vertices[2]));
+
+		Vector3 cross20 = Cross(Subtract(triangle.vertices[0], triangle.vertices[2]), Subtract(p, triangle.vertices[0]));
+
+
+		if (Dot(cross01, plane.normal) >= 0.0f && Dot(cross12, plane.normal) >= 0.0f && Dot(cross20, plane.normal) >= 0.0f)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 Vector3 Perpendicular(const Vector3& vector)
 {
 	if (vector.x != 0.0f || vector.y != 0.0f)
@@ -807,4 +843,19 @@ void DrawLine(const Line& line, const Matrix4x4& viewProjectionMatrix, const Mat
 	Vector3 end = TransformCoord(Add(line.origin, line.diff), viewProjectionMatrix);
 	Vector3 screenEnd = TransformCoord(end, viewportMatrix);
 	Novice::DrawLine(int(screenStart.x), int(screenStart.y), int(screenEnd.x), int(screenEnd.y), color);
+}
+
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	Vector3 vers[3]{};
+	Vector3 screenVers[3]{};
+
+	for (int i = 0; i < 3; i++)
+	{
+		vers[i] = TransformCoord(triangle.vertices[i], viewProjectionMatrix);
+
+		screenVers[i] = TransformCoord(vers[i], viewportMatrix);
+	}
+
+	Novice::DrawTriangle(int(screenVers[0].x), int(screenVers[0].y), int(screenVers[1].x), int(screenVers[1].y), int(screenVers[2].x), int(screenVers[2].y), color, kFillModeWireFrame);
 }

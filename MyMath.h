@@ -91,6 +91,18 @@ bool IsCollision(const Sphere& s1, const Sphere& s2);
 
 bool IsCollision(const Sphere& s1, const Plane& plane);
 
+bool IsCollision(const Segment& line, const Plane& plane);
+
+bool IsCollision(const Ray& line, const Plane& plane);
+
+bool IsCollision(const Line& line, const Plane& plane);
+
 Vector3 Perpendicular(const Vector3& vector);
 
 void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+void DrawLine(const Segment& seg, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+void DrawLine(const Ray& ray, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+void DrawLine(const Line& line, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);

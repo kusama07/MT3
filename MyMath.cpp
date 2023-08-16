@@ -722,6 +722,56 @@ bool IsCollision(const Sphere& s1, const Plane& plane)
 	return false;
 }
 
+bool IsCollision(const Segment& line, const Plane& plane)
+{
+	float dot = Dot(plane.normal, line.diff);
+
+	if (dot == 0.0f)
+	{
+		return false;
+	}
+
+	float t = (plane.distance - Dot(line.origin, plane.normal)) / dot;
+
+	if (0.0f < t && t < 1.0f)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool IsCollision(const Ray& line, const Plane& plane)
+{
+	float dot = Dot(plane.normal, line.diff);
+
+	if (dot == 0.0f)
+	{
+		return false;
+	}
+
+	float t = (plane.distance - Dot(line.origin, plane.normal)) / dot;
+
+	if (0.0f < t)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool IsCollision(const Line& line, const Plane& plane)
+{
+	float dot = Dot(plane.normal, line.diff);
+
+	if (dot == 0.0f)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 Vector3 Perpendicular(const Vector3& vector)
 {
 	if (vector.x != 0.0f || vector.y != 0.0f)
@@ -730,4 +780,31 @@ Vector3 Perpendicular(const Vector3& vector)
 	}
 
 	return { 0.0f, -vector.z, vector.y };
+}
+
+void DrawLine(const Segment& seg, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	Vector3 start = TransformCoord(seg.origin, viewProjectionMatrix);
+	Vector3 screenStart = TransformCoord(start, viewportMatrix);
+	Vector3 end = TransformCoord(Add(seg.origin, seg.diff), viewProjectionMatrix);
+	Vector3 screenEnd = TransformCoord(end, viewportMatrix);
+	Novice::DrawLine(int(screenStart.x), int(screenStart.y), int(screenEnd.x), int(screenEnd.y), color);
+}
+
+void DrawLine(const Ray& ray, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	Vector3 start = TransformCoord(ray.origin, viewProjectionMatrix);
+	Vector3 screenStart = TransformCoord(start, viewportMatrix);
+	Vector3 end = TransformCoord(Add(ray.origin, ray.diff), viewProjectionMatrix);
+	Vector3 screenEnd = TransformCoord(end, viewportMatrix);
+	Novice::DrawLine(int(screenStart.x), int(screenStart.y), int(screenEnd.x), int(screenEnd.y), color);
+}
+
+void DrawLine(const Line& line, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	Vector3 start = TransformCoord(line.origin, viewProjectionMatrix);
+	Vector3 screenStart = TransformCoord(start, viewportMatrix);
+	Vector3 end = TransformCoord(Add(line.origin, line.diff), viewProjectionMatrix);
+	Vector3 screenEnd = TransformCoord(end, viewportMatrix);
+	Novice::DrawLine(int(screenStart.x), int(screenStart.y), int(screenEnd.x), int(screenEnd.y), color);
 }

@@ -7,7 +7,6 @@ const char kWindowTitle[] = "LE2B_10_クサマリョウト";
 const int kWindowWidth = 1280;
 const int kWindowHeight = 720;
 
-static const int kColumWidth = 60;
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -18,19 +17,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraTranslate{ 0.0f, 1.9f, -6.49f };
 	Vector3 cameraRotate{ 0.26f, 0.0f, 0.0f };
 
-	Sphere sphere{
+	Sphere sphere1
+	{
+		{0.0f, 0.0f, 0.0f},
+		1.0f
+	};
+
+	Sphere sphere2
+	{
 		{0.0f, 0.0f, 0.0f},
 		0.5f
 	};
 
-	Segment segment({ -2.0f, -1.0f, 0.0f }, { 3.0f, 2.0f, 2.0f });
-	Vector3 point{ -1.5f, 0.6f, 0.6f };
-
-	Vector3 project = Project(Subtract(point, segment.origin), segment.diff);
-	Vector3 clossestPoint = ClosestPoint(point, segment);
-
-	Sphere pointSphere{ point, 0.01f };
-	Sphere clossestPointSphere{ clossestPoint, 0.01f };
+	uint32_t colorS1 = WHITE;
+	uint32_t colorS2 = WHITE;
 
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
@@ -56,9 +56,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 		Matrix4x4 viewportMatrix = MakeViewPortMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
+		if (IsCollision(sphere1, sphere2))
+		{
+			colorS1 = RED;
+		}
+		else
+		{
+			colorS1 = WHITE;
+		}
+
 		///
 		/// ↑更新処理ここまで
 		///
+
+		DrawShere(sphere1, worldViewProjectionMatrix, viewportMatrix, colorS1);
+		DrawShere(sphere2, worldViewProjectionMatrix, viewportMatrix, colorS2);
 
 		///
 		/// ↓描画処理ここから
@@ -66,25 +78,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
 
-		DrawShere(pointSphere, worldViewProjectionMatrix, viewportMatrix, RED);
-		DrawShere(clossestPointSphere, worldViewProjectionMatrix, viewportMatrix, BLACK);
-
-		Vector3 start = TransformCoord(TransformCoord(segment.origin, worldViewProjectionMatrix), viewportMatrix);
-		Vector3 end = TransformCoord(TransformCoord(Add(segment.origin, segment.diff), worldViewProjectionMatrix), viewportMatrix);
-
-		Novice::DrawLine(int(start.x), int(start.y), int(end.x), int(end.y), WHITE);
-
 		ImGui::Begin("Debug");
-		ImGui::DragFloat3("cameraTRa", &cameraTranslate.x, 0.1f, -50.0f, 50.0f);
-		ImGui::DragFloat3("cameraRot", &cameraRotate.x, 0.1f, -50.0f, 50.0f);
-		ImGui::InputFloat3("Project", &project.x, "%.3f", ImGuiInputTextFlags_ReadOnly);
+		ImGui::DragFloat3("sphere1", &sphere1.center.x, 0.1f, -1.0f, 1.0f);
+		ImGui::DragFloat("sphere1", &sphere1.radius, 0.1f, 0.0f, 1.0f);
+		ImGui::DragFloat3("sphere2", &sphere2.center.x, 0.1f, -1.0f, 1.0f);
+		ImGui::DragFloat("sphere2", &sphere2.radius, 0.1f, 0.0f, 1.0f);
 
 		ImGui::End();
 
 		///
 		/// ↑描画処理ここまで
 		///
-
 
 		// フレームの終了
 		Novice::EndFrame();

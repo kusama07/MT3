@@ -17,20 +17,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraTranslate{ 0.0f, 1.9f, -6.49f };
 	Vector3 cameraRotate{ 0.26f, 0.0f, 0.0f };
 
-	Sphere sphere1
+	Sphere sphere
 	{
 		{0.0f, 0.0f, 0.0f},
 		1.0f
 	};
 
-	Sphere sphere2
+	Plane plane
 	{
-		{0.0f, 0.0f, 0.0f},
-		0.5f
+		{1.0f, 1.0f, 1.0f},
+		1.0f
 	};
 
 	uint32_t colorS1 = WHITE;
 	uint32_t colorS2 = WHITE;
+
 
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
@@ -49,6 +50,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
+
 		Matrix4x4 worldMatrix = MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f });
 		Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
 		Matrix4x4 viewMatrix = Inverse(cameraMatrix);
@@ -56,7 +58,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 		Matrix4x4 viewportMatrix = MakeViewPortMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
-		if (IsCollision(sphere1, sphere2))
+		if (IsCollision(sphere, plane))
 		{
 			colorS1 = RED;
 		}
@@ -69,8 +71,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↑更新処理ここまで
 		///
 
-		DrawShere(sphere1, worldViewProjectionMatrix, viewportMatrix, colorS1);
-		DrawShere(sphere2, worldViewProjectionMatrix, viewportMatrix, colorS2);
+
+		DrawShere(sphere, worldViewProjectionMatrix, viewportMatrix, colorS1);
+		DrawPlane(plane, worldViewProjectionMatrix, viewportMatrix, colorS2);
+
 
 		///
 		/// ↓描画処理ここから
@@ -79,11 +83,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		DrawGrid(worldViewProjectionMatrix, viewportMatrix);
 
 		ImGui::Begin("Debug");
-		ImGui::DragFloat3("sphere1", &sphere1.center.x, 0.1f, -1.0f, 1.0f);
-		ImGui::DragFloat("sphere1", &sphere1.radius, 0.1f, 0.0f, 1.0f);
-		ImGui::DragFloat3("sphere2", &sphere2.center.x, 0.1f, -1.0f, 1.0f);
-		ImGui::DragFloat("sphere2", &sphere2.radius, 0.1f, 0.0f, 1.0f);
-
+		ImGui::DragFloat3("cameraTRa", &cameraTranslate.x, 0.1f, -50.0f, 50.0f);
+		ImGui::DragFloat3("cameraRot", &cameraRotate.x, 0.1f, -50.0f, 50.0f);
+		ImGui::DragFloat3("sphereCenter", &sphere.center.x, 0.1f, -1.0f, 1.0f);
+		ImGui::DragFloat("sphereRadius", &sphere.radius, 0.1f, -1.0f, 1.0f);
+		ImGui::DragFloat("planeDistance", &plane.distance, 0.1f, -1.0f, 5.0f);
+		ImGui::DragFloat3("planeNormal", &plane.normal.x, 0.1f, -1.0f, 1.0f);
+		plane.normal = Normalize(plane.normal);
 		ImGui::End();
 
 		///

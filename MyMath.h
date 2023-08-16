@@ -29,6 +29,12 @@ struct Segment
 	Vector3 diff;
 };
 
+struct Plane
+{
+	Vector3 normal;
+	float distance;
+};
+
 Vector3 Add(const Vector3& v1, const Vector3& v2);
 
 Vector3 Subtract(const Vector3& v1, const Vector3& v2);
@@ -82,3 +88,9 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 void DrawShere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
 bool IsCollision(const Sphere& s1, const Sphere& s2);
+
+bool IsCollision(const Sphere& s1, const Plane& plane);
+
+Vector3 Perpendicular(const Vector3& vector);
+
+void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
